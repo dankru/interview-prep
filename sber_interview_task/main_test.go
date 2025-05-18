@@ -18,6 +18,12 @@ func TestNewObject(t *testing.T) {
 		t.Logf("Creating %s", tc.kind)
 		obj := NewObject(tc.kind)
 
+		if tc.expectedFail {
+			if obj != nil {
+				t.Fatalf("obj should be nil, got %v", obj)
+			}
+		}
+
 		switch tc.kind {
 		case "child":
 			_, ok := obj.(Child)
