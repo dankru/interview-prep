@@ -28,6 +28,10 @@ import "fmt"
 	Не приводил к утечкам памяти
 */
 
+type Sayer interface {
+	Say()
+}
+
 type Base struct {
 	name string
 }
@@ -37,17 +41,39 @@ type Child struct {
 	lastName string
 }
 
-func (b *Base) Say() {
-	fmt.Println("Hello, ", b.name)
+func (b Base) Say() {
+	fmt.Printf("Hello, %s\n", b.name)
+}
+
+func (c Child) Say() {
+	fmt.Printf("Hello, %s %s\n", c.lastName, c.name)
+}
+
+func NewObject(kind string) Sayer {
+	switch kind {
+	case "child":
+		return Child{
+			Base:     Base{name: "Parent"},
+			lastName: "Inherited",
+		}
+	case "base":
+		return Base{name: "Parent"}
+	}
+	return nil
 }
 
 func main() {
 	b1 := Base{name: "Parent"}
 	c1 := Child{
 		Base:     b1,
-		lastName: "inherited",
+		lastName: "Inherited",
 	}
 
 	b1.Say()
 	c1.Say()
+
+	arr := [2]Sayer{b1, c1}
+	for _, v := range arr {
+		v.Say()
+	}
 }
