@@ -1,14 +1,16 @@
 package main
 
+import "fmt"
+
 /*
 1. Сделать структуры Base и Child
 2. Структура Base должна содержать строковое поле name
 3. Структура Child должна содержать строковое поле lastName
 4. Сделать функцию Say у структуры Base, которая распечатывает на экране "Hello, <name>!"
 5. Пронаследовать Child от Base
-6. Инициализировать экземпляров b1 Base
+6. Инициализировать экземпляр b1 Base
 	присвоить name значение Parent
-7. Инициализировать экземпляров c1 Child
+7. Инициализировать экземпляр c1 Child
 	привсвоить name значение Child
 	присвоить lastName значение inherited
 8. Вызывать у обоих экземпляров метод Say
@@ -25,3 +27,27 @@ package main
 	Метод Say вызывался в порядке генерации объектов
 	Не приводил к утечкам памяти
 */
+
+type Base struct {
+	name string
+}
+
+type Child struct {
+	Base
+	lastName string
+}
+
+func (b *Base) Say() {
+	fmt.Println("Hello, ", b.name)
+}
+
+func main() {
+	b1 := Base{name: "Parent"}
+	c1 := Child{
+		Base:     b1,
+		lastName: "inherited",
+	}
+
+	b1.Say()
+	c1.Say()
+}
