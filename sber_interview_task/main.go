@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 /*
 1. Сделать структуры Base и Child
@@ -62,18 +65,53 @@ func NewObject(kind string) Sayer {
 	return nil
 }
 
-func main() {
-	b1 := Base{name: "Parent"}
-	c1 := Child{
-		Base:     b1,
-		lastName: "Inherited",
-	}
+func generator() <-chan Sayer {
+	out := make(chan Sayer)
+	t := time.NewTicker(time.Second * 11)
+	tChild := time.NewTicker(time.Second * 2)
+	tBase := time.NewTicker(time.Second)
+	go func() {
+		defer t.Stop()
+		defer tChild.Stop()
+		defer tBase.Stop()
+		defer close(out)
+		for {
+			select {
+			case <-t.C:
+				return
+			case <-tChild.C:
+				out <- NewObject("child")
+				break
+			case <-tBase.C:
+				out <- NewObject("base")
+				break
+			}
+		}
+	}()
+	return out
+}
 
-	b1.Say()
-	c1.Say()
-
-	arr := [2]Sayer{b1, c1}
-	for _, v := range arr {
+func worker(in <-chan Sayer) {
+	for v := range in {
 		v.Say()
 	}
+}
+
+func main() {
+	//b1 := Base{name: "Parent"}
+	//c1 := Child{
+	//	Base:     b1,
+	//	lastName: "Inherited",
+	//}
+	//
+	//b1.Say()
+	//c1.Say()
+	//
+	//arr := [2]Sayer{b1, c1}
+	//for _, v := range arr {
+	//	v.Say()
+	//}
+
+	in := generator()
+	worker(in)
 }

@@ -6,7 +6,6 @@ import (
 	"time"
 )
 
-// Считывает уведомления из воркера, пишет в 2 других канала
 type DataProvider interface {
 	getData() <-chan int
 	stop()
